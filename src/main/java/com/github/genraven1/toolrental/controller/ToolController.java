@@ -1,6 +1,7 @@
 package com.github.genraven1.toolrental.controller;
 
 import com.github.genraven1.toolrental.exceptions.IllegalDiscountException;
+import com.github.genraven1.toolrental.exceptions.IllegalNumberOfRentalDaysException;
 import com.github.genraven1.toolrental.model.Checkout;
 import com.github.genraven1.toolrental.model.RentalAgreement;
 import com.github.genraven1.toolrental.service.ToolService;
@@ -20,10 +21,12 @@ public class ToolController {
         this.toolService = toolService;
     }
 
-    @PostMapping
+    @PostMapping("/generate")
     public ResponseEntity<RentalAgreement> generateRentalAgreement(@RequestBody final Checkout checkout) {
         // Checks if Discount is between 0 and 100 inclusively.
         validateDiscountPercent(checkout.getDiscount());
+        // Checks if number of Rental days is greater than 0
+        validateRentalDays(checkout.getDays());
 
         return ResponseEntity.ok(toolService.generateRentalAgreement(checkout));
     }
@@ -31,6 +34,12 @@ public class ToolController {
     public void validateDiscountPercent(final int discount) {
         if (discount < 0 || discount > 100) {
             throw new IllegalDiscountException(discount);
+        }
+    }
+
+    public void validateRentalDays(final int days) {
+        if (days < 1) {
+            throw new IllegalNumberOfRentalDaysException();
         }
     }
 }

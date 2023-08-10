@@ -3,7 +3,7 @@ package com.github.genraven1.toolrental.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -14,5 +14,5 @@ public class Checkout {
 
     private int discount;
 
-    private Date checkout;
+    private LocalDate checkout;
 }
