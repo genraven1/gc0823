@@ -1,5 +1,7 @@
 package com.github.genraven1.toolrental.service;
 
+import com.github.genraven1.toolrental.exceptions.IllegalDiscountException;
+import com.github.genraven1.toolrental.exceptions.IllegalNumberOfRentalDaysException;
 import com.github.genraven1.toolrental.model.Checkout;
 import com.github.genraven1.toolrental.model.RentalAgreement;
 import com.github.genraven1.toolrental.model.Tool;
@@ -17,9 +19,24 @@ public class ToolService {
      * Generates a Rental Agreement for the Tool being checked out.
      *
      * @param checkout The information about the checkout for the tool.
-     * @return The Rental Agreement for that tool and checkout
      */
-    public RentalAgreement generateRentalAgreement(final Checkout checkout) {
+    public RentalAgreement generateRentalAgreement(final Checkout checkout) throws IllegalNumberOfRentalDaysException {
+        System.out.println("START");
+        final int discount = checkout.getDiscount();
+        try {
+            if (discount < 0 || discount > 100) {
+                throw new RuntimeException(new IllegalDiscountException(discount));
+            }
+        } catch (final IllegalDiscountException exception) {
+            throw new IllegalDiscountException(discount);
+        }
+        // Checks if Discount is between 0 and 100 inclusively.
+
+        // Checks if number of Rental days is greater than 0
+        if (checkout.getDays() < 1) {
+            throw new IllegalNumberOfRentalDaysException();
+        }
+        System.out.println("HERE");
         final RentalAgreement agreement = new RentalAgreement(getToolByCode(checkout.getCode()), checkout);
         agreement.printRentalAgreement();
         return agreement;
