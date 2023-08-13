@@ -6,36 +6,42 @@ import org.springframework.stereotype.Component;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.YearMonth;
 import java.util.List;
 
 @Component
 public class ChargeUtil {
 
     public static int getTotalChargeDays(final RentalAgreement agreement, final LocalDate dueDate) {
+        int chargeDays = agreement.getCheckout().getDays();
         final LocalDate startDate = agreement.getCheckout().getCheckout();
         final List<LocalDate> rentalDays = startDate.datesUntil(dueDate).toList();
         if (agreement.getTool().getType().isHoliday()) {
             for (final LocalDate date : rentalDays) {
-                if (date.equals(LocalDate.of(date.getYear(), Month.JULY, 4))) {
+                if (includesIndependenceDayHoliday(date)) {
+                    chargeDays -= 1;
+                }
 
+                if (includesLaborDayHoliday(date)) {
+                    chargeDays -= 1;
+                }
+
+                if (date.getDayOfWeek().equals(DayOfWeek.SATURDAY) || date.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
+                    chargeDays -= 1;
                 }
             }
         }
-        int chargeDays = agreement.getCheckout().getDays();
         return chargeDays;
     }
 
-    private static void removeWeekendChargeDays(final RentalAgreement agreement, final LocalDate dueDate, int chargeDays) {
-        LocalDate startDate = agreement.getCheckout().getCheckout();
-        while (dueDate.isAfter(startDate)) {
-            if (startDate.getDayOfWeek().equals(DayOfWeek.SATURDAY) || startDate.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
-                chargeDays -= 1;
-            }
-            startDate = startDate.plusDays(1);
-        }
+    private static boolean includesIndependenceDayHoliday(final LocalDate date) {
+        return false;
     }
 
-    private static void removeHolidayChargeDays(final RentalAgreement agreement, final LocalDate dueDate) {
-
+    private static boolean includesLaborDayHoliday(final LocalDate date) {
+        final YearMonth september = YearMonth.of(date.getYear(), Month.SEPTEMBER);
+        final LocalDate laborDay = september.atDay(1).with(DayOfWeek.MONDAY);
+        System.out.println(laborDay);
+        return date.isEqual(laborDay);
     }
 }

@@ -2,14 +2,13 @@ package com.github.genraven1.toolrental.service;
 
 import com.github.genraven1.toolrental.exceptions.IllegalDiscountException;
 import com.github.genraven1.toolrental.exceptions.IllegalNumberOfRentalDaysException;
+import com.github.genraven1.toolrental.exceptions.ToolNotFoundException;
 import com.github.genraven1.toolrental.model.Checkout;
 import com.github.genraven1.toolrental.model.RentalAgreement;
 import com.github.genraven1.toolrental.model.Tool;
-import com.github.genraven1.toolrental.util.ChargeUtil;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,23 +23,23 @@ public class ToolService {
      */
     public RentalAgreement generateRentalAgreement(final Checkout checkout) throws IllegalNumberOfRentalDaysException {
         final int discount = checkout.getDiscount();
-        try {
-            if (discount < 0 || discount > 100) {
-                throw new RuntimeException(new IllegalDiscountException(discount));
-            }
-        } catch (final IllegalDiscountException exception) {
+        // Checks if Discount is between 0 and 100 inclusively.
+        if (discount < 0 || discount > 100) {
             throw new IllegalDiscountException(discount);
         }
-        // Checks if Discount is between 0 and 100 inclusively.
 
         // Checks if number of Rental days is greater than 0
         if (checkout.getDays() < 1) {
             throw new IllegalNumberOfRentalDaysException();
         }
-        final RentalAgreement agreement = new RentalAgreement(getToolByCode(checkout.getCode()), checkout);
-        return agreement;
+
+        return new RentalAgreement(getToolByCode(checkout.getCode()), checkout);
     }
 
+    /**
+     * Creates a list of all tools in the system.
+     * @return A list of all the tools in the system.
+     */
     public List<Tool> getAllTools() {
         return Arrays.asList(
                 new Tool("CHNS", Tool.Type.CHAINSAW, Tool.Brand.STIHL),
@@ -49,15 +48,13 @@ public class ToolService {
                 new Tool("JAKR", Tool.Type.JACKHAMMER, Tool.Brand.RIDGID)
         );
     }
-    
+
+    /**
+     * Gets a tool based on the unique tool code associated with each tool in the system.
+     * @param code The Unique Tool Code.
+     * @return The tool associated with the Tool Code.
+     */
     public Tool getToolByCode(final String code) {
-        final List<Tool> tools = getAllTools();
-        Tool foundTool = null;
-        for (final Tool tool : tools) {
-            if (tool.getCode().equals(code)) {
-                foundTool = tool;
-            }
-        }
-        return foundTool;
+        return getAllTools().stream().filter(tool -> tool.getCode().equals(code)).findFirst().orElseThrow(() -> new ToolNotFoundException(code));
     }
 }

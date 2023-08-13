@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Month;
 
@@ -56,28 +58,31 @@ class ToolRentalApplicationTests {
     @Test
     public void testOrderTwo() {
         final RentalAgreement agreement = toolService.generateRentalAgreement(checkout2);
-        System.out.println(agreement);
         printRentalAgreement(agreement);
     }
 
     @Test
     public void testOrderThree() {
-        toolService.generateRentalAgreement(checkout3);
+        final RentalAgreement agreement = toolService.generateRentalAgreement(checkout3);
+        printRentalAgreement(agreement);
     }
 
     @Test
     public void testOrderFour() {
-        toolService.generateRentalAgreement(checkout4);
+        final RentalAgreement agreement = toolService.generateRentalAgreement(checkout4);
+        printRentalAgreement(agreement);
     }
 
     @Test
     public void testOrderFive() {
-        toolService.generateRentalAgreement(checkout5);
+        final RentalAgreement agreement = toolService.generateRentalAgreement(checkout5);
+        printRentalAgreement(agreement);
     }
 
     @Test
     public void testOrderSix() {
-        toolService.generateRentalAgreement(checkout6);
+        final RentalAgreement agreement = toolService.generateRentalAgreement(checkout6);
+        printRentalAgreement(agreement);
     }
 
     private void printRentalAgreement(final RentalAgreement agreement) {
@@ -110,21 +115,30 @@ class ToolRentalApplicationTests {
         builder.append("Charge days: ").append(chargeDays).append(System.getProperty("line.separator"));
 
         // Print Pre-Discount Charge
-        final double preDiscountCharge = (double) Math.round(dailyRentalCharge * chargeDays * 100) / 100D;
-        builder.append("Pre-discount charge: ").append("$").append(preDiscountCharge).append(System.getProperty("line.separator"));
+        final double preDiscountCharge = dailyRentalCharge * chargeDays;
+        builder.append("Pre-discount charge: ").append("$").append(roundDouble(preDiscountCharge)).append(System.getProperty("line.separator"));
 
         // Print Discount Percent
         final int discount = agreement.getCheckout().getDiscount();
         builder.append("Discount percent: ").append(discount).append("%").append(System.getProperty("line.separator"));
 
         // Print Discount Amount
-        final double discountPercent = (double) discount / 100D;
-        final double discountAmount = (double) Math.round(preDiscountCharge * discountPercent * 100) / 100D;
-        builder.append("Discount amount: ").append("$").append(discountAmount).append(System.getProperty("line.separator"));
+        final double discountPercent = (double) discount / 100;
+        final double discountAmount = preDiscountCharge * discountPercent;
+        builder.append("Discount amount: ").append("$").append(roundDouble(discountAmount)).append(System.getProperty("line.separator"));
 
         // Print Final Charge
         final double finalCharge = preDiscountCharge - discountAmount;
-        builder.append("Final charge: ").append("$").append(finalCharge).append(System.getProperty("line.separator"));
+        builder.append("Final charge: ").append("$").append(roundDouble(finalCharge)).append(System.getProperty("line.separator"));
         System.out.println(builder);
+    }
+
+    /**
+     * Correctly rounds up change to the correct number of cents.
+     * @param charge How much the rental costs.
+     * @return The charge in dd.cc format.
+     */
+    private BigDecimal roundDouble(final double charge) {
+        return new BigDecimal(charge).setScale(2, RoundingMode.HALF_UP);
     }
 }
