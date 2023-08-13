@@ -5,9 +5,11 @@ import com.github.genraven1.toolrental.exceptions.IllegalNumberOfRentalDaysExcep
 import com.github.genraven1.toolrental.model.Checkout;
 import com.github.genraven1.toolrental.model.RentalAgreement;
 import com.github.genraven1.toolrental.model.Tool;
+import com.github.genraven1.toolrental.util.ChargeUtil;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,7 +23,6 @@ public class ToolService {
      * @param checkout The information about the checkout for the tool.
      */
     public RentalAgreement generateRentalAgreement(final Checkout checkout) throws IllegalNumberOfRentalDaysException {
-        System.out.println("START");
         final int discount = checkout.getDiscount();
         try {
             if (discount < 0 || discount > 100) {
@@ -36,9 +37,7 @@ public class ToolService {
         if (checkout.getDays() < 1) {
             throw new IllegalNumberOfRentalDaysException();
         }
-        System.out.println("HERE");
         final RentalAgreement agreement = new RentalAgreement(getToolByCode(checkout.getCode()), checkout);
-        agreement.printRentalAgreement();
         return agreement;
     }
 
