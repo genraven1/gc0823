@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -32,6 +33,8 @@ class ToolRentalApplicationTests {
     private static Checkout checkout4;
     private static Checkout checkout5;
     private static Checkout checkout6;
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yy");
 
     private final ToolService toolService = new ToolService();
 
@@ -100,11 +103,11 @@ class ToolRentalApplicationTests {
         builder.append("Rental Days: ").append(agreement.getCheckout().getDays()).append(System.getProperty("line.separator"));
 
         // Print Checkout Date
-        builder.append("Check out date: ").append(agreement.getCheckout().getCheckout()).append(System.getProperty("line.separator"));
+        builder.append("Check out date: ").append(formatLocalDate(agreement.getCheckout().getCheckout())).append(System.getProperty("line.separator"));
 
         // Print Due Date
         final LocalDate dueDate = agreement.getCheckout().getCheckout().plusDays(agreement.getCheckout().getDays());
-        builder.append("Due date: ").append(dueDate).append(System.getProperty("line.separator"));
+        builder.append("Due date: ").append(formatLocalDate(dueDate)).append(System.getProperty("line.separator"));
 
         // Print Daily Rental Charge
         final double dailyRentalCharge = agreement.getTool().getType().getCharge();
@@ -135,10 +138,15 @@ class ToolRentalApplicationTests {
 
     /**
      * Correctly rounds up change to the correct number of cents.
+     *
      * @param charge How much the rental costs.
      * @return The charge in dd.cc format.
      */
     private BigDecimal roundDouble(final double charge) {
         return new BigDecimal(charge).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private String formatLocalDate(final LocalDate date) {
+        return date.format(formatter);
     }
 }
