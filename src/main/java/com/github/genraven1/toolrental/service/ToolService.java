@@ -38,6 +38,7 @@ public class ToolService {
 
     /**
      * Creates a list of all tools in the system.
+     *
      * @return A list of all the tools in the system.
      */
     public List<Tool> getAllTools() {
@@ -51,6 +52,7 @@ public class ToolService {
 
     /**
      * Gets a tool based on the unique tool code associated with each tool in the system.
+     *
      * @param code The Unique Tool Code.
      * @return The tool associated with the Tool Code.
      */

@@ -4,7 +4,7 @@ import com.github.genraven1.toolrental.exceptions.IllegalDiscountException;
 import com.github.genraven1.toolrental.model.Checkout;
 import com.github.genraven1.toolrental.model.RentalAgreement;
 import com.github.genraven1.toolrental.service.ToolService;
-import com.github.genraven1.toolrental.util.ChargeUtil;
+import com.github.genraven1.toolrental.util.ChargeDaysUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -64,6 +64,11 @@ class ToolRentalApplicationTests {
         printRentalAgreement(agreement);
     }
 
+    /**
+     * Prints out the Rental Agreement to the console.
+     *
+     * @param agreement The Rental Agreement to be printed.
+     */
     private void printRentalAgreement(final RentalAgreement agreement) {
         final StringBuilder builder = new StringBuilder();
         // Print Tool Code
@@ -90,7 +95,7 @@ class ToolRentalApplicationTests {
         builder.append("Daily Rental Charge: ").append("$").append(dailyRentalCharge).append(System.getProperty("line.separator"));
 
         // Print Charge Days
-        final int chargeDays = ChargeUtil.getTotalChargeDays(agreement, dueDate);
+        final int chargeDays = ChargeDaysUtil.getTotalChargeDays(agreement, dueDate);
         builder.append("Charge days: ").append(chargeDays).append(System.getProperty("line.separator"));
 
         // Print Pre-Discount Charge
@@ -122,6 +127,12 @@ class ToolRentalApplicationTests {
         return new BigDecimal(charge).setScale(2, RoundingMode.HALF_UP);
     }
 
+    /**
+     * Converts LocalDate into the MM/dd/yy format.
+     *
+     * @param date The LocalDate to be formatted.
+     * @return The Formatted String of the LocalDate.
+     */
     private String formatLocalDate(final LocalDate date) {
         return date.format(formatter);
     }
