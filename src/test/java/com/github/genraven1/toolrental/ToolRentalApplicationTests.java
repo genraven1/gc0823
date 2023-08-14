@@ -3,12 +3,9 @@ package com.github.genraven1.toolrental;
 import com.github.genraven1.toolrental.exceptions.IllegalDiscountException;
 import com.github.genraven1.toolrental.model.Checkout;
 import com.github.genraven1.toolrental.model.RentalAgreement;
-import com.github.genraven1.toolrental.model.Tool;
 import com.github.genraven1.toolrental.service.ToolService;
 import com.github.genraven1.toolrental.util.ChargeUtil;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
@@ -20,71 +17,50 @@ import java.time.format.DateTimeFormatter;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@AutoConfigureMockMvc
 class ToolRentalApplicationTests {
-
-    private static Tool tool1;
-    private static Tool tool2;
-    private static Tool tool3;
-    private static Tool tool4;
-    private static Checkout checkout1;
-    private static Checkout checkout2;
-    private static Checkout checkout3;
-    private static Checkout checkout4;
-    private static Checkout checkout5;
-    private static Checkout checkout6;
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yy");
 
     private final ToolService toolService = new ToolService();
 
-    @BeforeAll
-    static void init() {
-        tool1 = new Tool("CHNS", Tool.Type.CHAINSAW, Tool.Brand.STIHL);
-        tool2 = new Tool("LADW", Tool.Type.LADDER, Tool.Brand.WERNER);
-        tool3 = new Tool("JAKD", Tool.Type.JACKHAMMER, Tool.Brand.DEWALT);
-        tool4 = new Tool("JAKR", Tool.Type.JACKHAMMER, Tool.Brand.RIDGID);
-
-        checkout1 = new Checkout("JAKR", 5, 101, LocalDate.of(2015, Month.SEPTEMBER, 3));
-        checkout2 = new Checkout("LADW", 3, 10, LocalDate.of(2020, Month.JULY, 2));
-        checkout3 = new Checkout("CHNS", 5, 25, LocalDate.of(2015, Month.JULY, 2));
-        checkout4 = new Checkout("JAKD", 6, 0, LocalDate.of(2015, Month.SEPTEMBER, 3));
-        checkout5 = new Checkout("JAKR", 9, 0, LocalDate.of(2015, Month.JULY, 2));
-        checkout6 = new Checkout("JAKR", 4, 50, LocalDate.of(2020, Month.JULY, 2));
-    }
-
     @Test
     public void testOrderOne() {
-        assertThrows(IllegalDiscountException.class, () -> toolService.generateRentalAgreement(checkout1));
+        final Checkout checkout = new Checkout("JAKR", 5, 101, LocalDate.of(2015, Month.SEPTEMBER, 3));
+        assertThrows(IllegalDiscountException.class, () -> toolService.generateRentalAgreement(checkout));
     }
 
     @Test
     public void testOrderTwo() {
-        final RentalAgreement agreement = toolService.generateRentalAgreement(checkout2);
+        final Checkout checkout = new Checkout("LADW", 3, 10, LocalDate.of(2020, Month.JULY, 2));
+        final RentalAgreement agreement = toolService.generateRentalAgreement(checkout);
         printRentalAgreement(agreement);
     }
 
     @Test
     public void testOrderThree() {
-        final RentalAgreement agreement = toolService.generateRentalAgreement(checkout3);
+        final Checkout checkout = new Checkout("CHNS", 5, 25, LocalDate.of(2015, Month.JULY, 2));
+        final RentalAgreement agreement = toolService.generateRentalAgreement(checkout);
         printRentalAgreement(agreement);
     }
 
     @Test
     public void testOrderFour() {
-        final RentalAgreement agreement = toolService.generateRentalAgreement(checkout4);
+        final Checkout checkout = new Checkout("JAKD", 6, 0, LocalDate.of(2015, Month.SEPTEMBER, 3));
+        final RentalAgreement agreement = toolService.generateRentalAgreement(checkout);
         printRentalAgreement(agreement);
     }
 
     @Test
     public void testOrderFive() {
-        final RentalAgreement agreement = toolService.generateRentalAgreement(checkout5);
+        final Checkout checkout = new Checkout("JAKR", 9, 0, LocalDate.of(2015, Month.JULY, 2));
+        final RentalAgreement agreement = toolService.generateRentalAgreement(checkout);
         printRentalAgreement(agreement);
     }
 
     @Test
     public void testOrderSix() {
-        final RentalAgreement agreement = toolService.generateRentalAgreement(checkout6);
+        final Checkout checkout = new Checkout("JAKR", 4, 50, LocalDate.of(2020, Month.JULY, 2));
+        final RentalAgreement agreement = toolService.generateRentalAgreement(checkout);
         printRentalAgreement(agreement);
     }
 
